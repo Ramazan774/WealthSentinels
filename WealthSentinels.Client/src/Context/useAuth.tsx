@@ -19,7 +19,7 @@ type Props = { children: React.ReactNode };
 
 const UserContext = createContext<UserContextType>({} as UserContextType);
 
-export const UserProvider = ({ children} : Props) => {
+export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -28,7 +28,7 @@ export const UserProvider = ({ children} : Props) => {
   useEffect(() => {
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    if(user && token) {
+    if (user && token) {
       setUser(JSON.parse(user));
       setToken(token);
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;
@@ -36,13 +36,13 @@ export const UserProvider = ({ children} : Props) => {
     setIsReady(true);
   }, [])
 
-  const registerUser = async(
-    email: string, 
-    username: string, 
+  const registerUser = async (
+    email: string,
+    username: string,
     password: string
   ) => {
     await registerAPI(email, username, password).then((res) => {
-      if(res) {
+      if (res) {
         localStorage.setItem("token", res.token);
         const userObj = {
           userName: res.userName,
@@ -51,18 +51,19 @@ export const UserProvider = ({ children} : Props) => {
         localStorage.setItem("user", JSON.stringify(userObj));
         setToken(res.token!);
         setUser(userObj!);
+        axios.defaults.headers.common["Authorization"] = "Bearer " + res.token;
         toast.success("Login Success!");
         navigate("/search");
       }
     }).catch((e) => toast.warning("Server Error occurred."));
   };
 
-  const loginUser = async(
-    username: string, 
+  const loginUser = async (
+    username: string,
     password: string
   ) => {
     await loginAPI(username, password).then((res) => {
-      if(res) {
+      if (res) {
         localStorage.setItem("token", res.token);
         const userObj = {
           userName: res.userName,
@@ -71,6 +72,7 @@ export const UserProvider = ({ children} : Props) => {
         localStorage.setItem("user", JSON.stringify(userObj));
         setToken(res.token!);
         setUser(userObj!);
+        axios.defaults.headers.common["Authorization"] = "Bearer " + res.token;
         toast.success("Login Success!");
         navigate("/search");
       }
@@ -90,7 +92,7 @@ export const UserProvider = ({ children} : Props) => {
   };
 
   return (
-    <UserContext.Provider 
+    <UserContext.Provider
       value={{ loginUser, user, token, logout, isLoggedIn, registerUser }}
     >
       {isReady ? children : null}
