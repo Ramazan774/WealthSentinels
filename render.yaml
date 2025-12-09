@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: wealthsentinels-api
+    env: docker
+    dockerfilePath: ./WealthSentinels.api/Dockerfile
+    dockerContext: ./WealthSentinels.api
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wealthsentinels-db
+          property: connectionString
+      - key: JWT__Issuer
+        sync: false
+      - key: JWT__Audience
+        sync: false
+      - key: JWT__SigningKey
+        generateValue: true
+
+databases:
+  - name: wealthsentinels-db
+    databaseName: wealthsentinels
+    plan: free
