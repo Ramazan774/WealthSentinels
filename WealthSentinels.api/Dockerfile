@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
@@ -16,8 +15,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Important: Set the PORT environment variable
-ENV ASPNETCORE_URLS=http://+:8080
+# Render provides PORT environment variable - use it
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "WealthSentinels.api.dll"]
+# Use the PORT environment variable from Render, fallback to 8080
+CMD ASPNETCORE_URLS=http://*:${PORT:-8080} dotnet WealthSentinels.api.dll
