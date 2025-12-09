@@ -67,7 +67,8 @@ string ConvertDatabaseUrlToConnectionString(string rawUrl)
 {
     var uri = new Uri(rawUrl);
     var userInfo = uri.UserInfo.Split(':');
-    return $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    var port = uri.Port > 0 ? uri.Port : 5432; // Default to 5432 if port not specified
+    return $"Host={uri.Host};Port={port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
 }
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
